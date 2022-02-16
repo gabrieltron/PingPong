@@ -32,5 +32,34 @@ namespace PingPong.Data
                 await connection.QueryAsync(sql, new { player.Name });
             }
         }
+
+        public async Task<Player> FindOne(int id)
+        {
+            Player player;
+            using (var connection = _connectionFactory.GetConnection())
+            {
+                const string sql = "SELECT * FROM Players WHERE Id = @Id";
+                player = await connection.QueryFirstOrDefaultAsync<Player>(sql, new { id });
+            }
+            return player;
+        }
+
+        public async Task Update(Player player)
+        {
+            using (var connection = _connectionFactory.GetConnection())
+            {
+                const string sql = "UPDATE Players SET Name = @Name WHERE Id = @Id";
+                await connection.QueryAsync(sql, new { player.Name, player.Id });
+            }
+        }
+
+        public async Task Delete(int id)
+        {
+            using (var connection = _connectionFactory.GetConnection())
+            {
+                const string sql = "DELETE FROM Players WHERE Id = @Id";
+                await connection.QueryAsync(sql, new { id });
+            }
+        }
     }
 }

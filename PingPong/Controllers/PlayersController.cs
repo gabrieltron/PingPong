@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PingPong.Data;
 using PingPong.Models;
+using System.Data.SqlClient;
 
 namespace PingPong.Controllers
 {
@@ -32,8 +33,7 @@ namespace PingPong.Controllers
                 return NotFound();
             }
 
-            var player = await _context.Player
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var player = await _repository.FindOne((int)id);
             if (player == null)
             {
                 return NotFound();
@@ -63,8 +63,6 @@ namespace PingPong.Controllers
             return View(player);
         }
         
-        /* TODO: edit this code to stop using EF Core and use Dapper 
-
         // GET: Players/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -73,7 +71,7 @@ namespace PingPong.Controllers
                 return NotFound();
             }
 
-            var player = await _context.Player.FindAsync(id);
+            var player = await _repository.FindOne((int)id);
             if (player == null)
             {
                 return NotFound();
@@ -97,10 +95,9 @@ namespace PingPong.Controllers
             {
                 try
                 {
-                    _context.Update(player);
-                    await _context.SaveChangesAsync();
+                    await _repository.Update(player);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (SqlException)
                 {
                     if (!PlayerExists(player.Id))
                     {
@@ -124,8 +121,7 @@ namespace PingPong.Controllers
                 return NotFound();
             }
 
-            var player = await _context.Player
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var player = await _repository.FindOne((int)id);
             if (player == null)
             {
                 return NotFound();
@@ -139,9 +135,7 @@ namespace PingPong.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var player = await _context.Player.FindAsync(id);
-            _context.Player.Remove(player);
-            await _context.SaveChangesAsync();
+            await _repository.Delete(id);
             return RedirectToAction(nameof(Index));
         }
 
@@ -149,6 +143,6 @@ namespace PingPong.Controllers
         {
             return _context.Player.Any(e => e.Id == id);
         }
-        */
+
     }
 }
