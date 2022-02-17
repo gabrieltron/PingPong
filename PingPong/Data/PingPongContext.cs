@@ -18,5 +18,7 @@ namespace PingPong.Data
         public DbSet<PingPong.Models.Player> Player { get; set; }
 
         public DbSet<PingPong.Models.Team> Team { get; set; }
+
+        public DbSet<PingPong.Models.Game> Game { get; set; }
     }
 }
