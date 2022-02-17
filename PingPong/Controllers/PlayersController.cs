@@ -21,7 +21,7 @@ namespace PingPong.Controllers
         // GET: Players
         public async Task<IActionResult> Index()
         {
-            List<Player> players = (await this._repository.GetAll()).ToList();
+            List<Player> players = (await this._repository.FindAll()).ToList();
             return View(players);
         }
 
@@ -57,7 +57,7 @@ namespace PingPong.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _repository.Add(player);
+                await _repository.Create(player);
                 return RedirectToAction(nameof(Index));
             }
             return View(player);

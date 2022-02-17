@@ -12,7 +12,7 @@ namespace PingPong.Data
             _connectionFactory = connectionFactory;
         }
 
-        public async Task<IEnumerable<Player>> GetAll()
+        public async Task<IEnumerable<Player>> FindAll()
         {
             IEnumerable<Player> players;
             using (var connection = _connectionFactory.GetConnection())
@@ -23,7 +23,7 @@ namespace PingPong.Data
             return players;
         }
 
-        public async Task Add(Player player)
+        public async Task Create(Player player)
         {
             using (var connection = _connectionFactory.GetConnection())
             {

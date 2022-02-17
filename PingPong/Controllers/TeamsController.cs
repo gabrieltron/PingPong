@@ -51,7 +51,7 @@ namespace PingPong.Controllers
         // GET: Teams/Create
         public async Task<IActionResult> Create()
         {
-            var players = await _playerRepository.GetAll();
+            var players = await _playerRepository.FindAll();
             var playersVm = new TeamPlayerSelectionVM
             {
                 Players = new SelectList(players, nameof(Player.Id), nameof(Player.Name))
@@ -95,7 +95,7 @@ namespace PingPong.Controllers
                 return NotFound();
             }
 
-            var players = await _playerRepository.GetAll();
+            var players = await _playerRepository.FindAll();
             var playersVm = new TeamPlayerSelectionVM
             {
                 TeamId = team.Id,
