@@ -9,12 +9,10 @@ namespace PingPong.Controllers
 {
     public class PlayersController : Controller
     {
-        private readonly PingPongContext _context;
         private readonly PlayerRepository _repository;
 
-        public PlayersController(PingPongContext context, PlayerRepository repository)
+        public PlayersController(PlayerRepository repository)
         {
-            _context = context;
             _repository = repository;
         }
 
@@ -141,7 +139,7 @@ namespace PingPong.Controllers
 
         private bool PlayerExists(int id)
         {
-            return _context.Player.Any(e => e.Id == id);
+            return _repository.FindOne(id) != null;
         }
 
     }
