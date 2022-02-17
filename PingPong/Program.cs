@@ -1,10 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PingPong.Data;
+﻿using PingPong.Data;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddDbContext<PingPongContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("PingPongContext")));
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddSingleton<IDBConnectionFactory, DBConnectionFactory>();

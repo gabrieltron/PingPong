@@ -1,9 +1,9 @@
 ﻿#nullable disable
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using PingPong.Data;
 using PingPong.Models;
+using System.Data.SqlClient;
 
 namespace PingPong.Controllers
 {
@@ -127,7 +127,7 @@ namespace PingPong.Controllers
                     team.PlayerTwoId = teamPlayerSelectionVM.SelectedPlayerTwoId;
                     await _teamRepository.Update(team);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (SqlException)
                 {
                     if (!await TeamExists((int)teamPlayerSelectionVM.TeamId))
                     {
