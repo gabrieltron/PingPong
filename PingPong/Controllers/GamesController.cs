@@ -25,7 +25,14 @@ namespace PingPong.Controllers
         // GET: Games
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Game.ToListAsync());
+            var gameTeamVMs = new List<GameTeamVM>();
+            foreach (var game in await _context.Game.ToListAsync())
+            {
+                var gameTeamVM = await ToGameTeamVM(game);
+                gameTeamVMs.Add(gameTeamVM);
+            }
+
+            return View(gameTeamVMs);
         }
 
         // GET: Games/Details/5
@@ -43,7 +50,7 @@ namespace PingPong.Controllers
                 return NotFound();
             }
 
-            return View(game);
+            return View(await ToGameTeamVM(game));
         }
 
         // GET: Games/Create
@@ -115,5 +122,21 @@ namespace PingPong.Controllers
         {
             return _context.Game.Any(e => e.Id == id);
         }
+
+        private async Task<GameTeamVM> ToGameTeamVM(Game game)
+        {
+            var teamOne = await _teamRepository.FindOne(game.TeamOneId);
+            var teamTwo = await _teamRepository.FindOne(game.TeamTwoId);
+            return new GameTeamVM
+            {
+                Id = game.Id,
+                Date = game.Date,
+                TeamOne = teamOne,
+                TeamOneScore = game.TeamOneScore,
+                TeamTwo = teamTwo,
+                TeamTwoScore = game.TeamTwoScore
+            };
+        }
+
     }
 }
