@@ -13,20 +13,20 @@ namespace PingPong.Controllers
 {
     public class GamesController : Controller
     {
-        private readonly PingPongContext _context;
         private readonly TeamRepository _teamRepository;
+        private readonly GameRepository _gameRepository;
 
-        public GamesController(PingPongContext context, TeamRepository teamRepository)
+        public GamesController(TeamRepository teamRepository, GameRepository gameRepository)
         {
-            _context = context;
             _teamRepository = teamRepository;
+            _gameRepository = gameRepository;
         }
 
         // GET: Games
         public async Task<IActionResult> Index()
         {
             var gameTeamVMs = new List<GameTeamVM>();
-            foreach (var game in await _context.Game.ToListAsync())
+            foreach (var game in await _gameRepository.FindAll())
             {
                 var gameTeamVM = await ToGameTeamVM(game);
                 gameTeamVMs.Add(gameTeamVM);
@@ -43,8 +43,7 @@ namespace PingPong.Controllers
                 return NotFound();
             }
 
-            var game = await _context.Game
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var game = await _gameRepository.FindOne((int)id);
             if (game == null)
             {
                 return NotFound();
@@ -82,8 +81,7 @@ namespace PingPong.Controllers
                     TeamTwoId = gameTeamSelectionVM.SelectedTeamTwoId,
                     TeamTwoScore = gameTeamSelectionVM.TeamTwoScore
                 };
-                _context.Add(game);
-                await _context.SaveChangesAsync();
+                await _gameRepository.Create(game);
                 return RedirectToAction(nameof(Index));
             }
             return View(gameTeamSelectionVM);
@@ -97,8 +95,7 @@ namespace PingPong.Controllers
                 return NotFound();
             }
 
-            var game = await _context.Game
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var game = await _gameRepository.FindOne((int)id);
             if (game == null)
             {
                 return NotFound();
@@ -112,15 +109,8 @@ namespace PingPong.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var game = await _context.Game.FindAsync(id);
-            _context.Game.Remove(game);
-            await _context.SaveChangesAsync();
+            await _gameRepository.Delete(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool GameExists(int id)
-        {
-            return _context.Game.Any(e => e.Id == id);
         }
 
         private async Task<GameTeamVM> ToGameTeamVM(Game game)
