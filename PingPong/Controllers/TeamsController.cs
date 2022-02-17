@@ -9,20 +9,20 @@ namespace PingPong.Controllers
 {
     public class TeamsController : Controller
     {
-        private readonly PingPongContext _context;
         private readonly PlayerRepository _playerRepository;
+        private readonly TeamRepository _teamRepository;
 
-        public TeamsController(PingPongContext context, PlayerRepository playerRepository)
+        public TeamsController(PlayerRepository playerRepository, TeamRepository teamRepository)
         {
-            _context = context;
             _playerRepository = playerRepository;
+            _teamRepository = teamRepository;
         }
 
         // GET: Teams
         public async Task<IActionResult> Index()
         {
             var teamPlayerVms = new List<TeamPlayerVm>();
-            foreach (var team in await _context.Team.ToListAsync())
+            foreach (var team in await _teamRepository.FindAll())
             {
                 var teamPlayerVm = await ToTeamPlayerVm(team);
                 teamPlayerVms.Add(teamPlayerVm);
@@ -38,8 +38,7 @@ namespace PingPong.Controllers
                 return NotFound();
             }
 
-            var team = await _context.Team
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var team = await _teamRepository.FindOne((int)id);
             if (team == null)
             {
                 return NotFound();
@@ -74,8 +73,7 @@ namespace PingPong.Controllers
                     PlayerOneId = teamPlayerSelectionVM.SelectedPlayerOneId,
                     PlayerTwoId = teamPlayerSelectionVM.SelectedPlayerTwoId
                 };
-                _context.Add(newTeam);
-                await _context.SaveChangesAsync();
+                await _teamRepository.Create(newTeam);
                 return RedirectToAction(nameof(Index));
             }
             return RedirectToAction(nameof(Create));
@@ -89,7 +87,7 @@ namespace PingPong.Controllers
                 return NotFound();
             }
 
-            var team = await _context.Team.FindAsync(id);
+            var team = await _teamRepository.FindOne((int)id);
             if (team == null)
             {
                 return NotFound();
@@ -123,12 +121,11 @@ namespace PingPong.Controllers
             {
                 try
                 {
-                    var team = await _context.Team.FindAsync(teamPlayerSelectionVM.TeamId);
+                    var team = await _teamRepository.FindOne((int)teamPlayerSelectionVM.TeamId);
                     team.Name = teamPlayerSelectionVM.TeamName;
                     team.PlayerOneId = teamPlayerSelectionVM.SelectedPlayerOneId;
                     team.PlayerTwoId = teamPlayerSelectionVM.SelectedPlayerTwoId;
-                    _context.Update(team);
-                    await _context.SaveChangesAsync();
+                    await _teamRepository.Update(team);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -154,8 +151,7 @@ namespace PingPong.Controllers
                 return NotFound();
             }
 
-            var team = await _context.Team
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var team = await _teamRepository.FindOne((int)id);
             if (team == null)
             {
                 return NotFound();
@@ -169,15 +165,13 @@ namespace PingPong.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var team = await _context.Team.FindAsync(id);
-            _context.Team.Remove(team);
-            await _context.SaveChangesAsync();
+            await _teamRepository.Delete(id);
             return RedirectToAction(nameof(Index));
         }
 
         private bool TeamExists(int id)
         {
-            return _context.Team.Any(e => e.Id == id);
+            return _teamRepository.FindOne(id) != null;
         }
 
         private async Task<TeamPlayerVm> ToTeamPlayerVm(Team team)

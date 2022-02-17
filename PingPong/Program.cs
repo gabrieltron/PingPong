@@ -10,6 +10,7 @@ builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddSingleton<IDBConnectionFactory, DBConnectionFactory>();
 
 builder.Services.AddScoped<PlayerRepository>();
+builder.Services.AddScoped<TeamRepository>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
