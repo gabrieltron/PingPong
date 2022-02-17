@@ -25,7 +25,6 @@ namespace PingPong.Data
 
         public async Task Add(Player player)
         {
-            IEnumerable<Player> players;
             using (var connection = _connectionFactory.GetConnection())
             {
                 const string sql = "INSERT INTO Players(Name) values (@Name)";
