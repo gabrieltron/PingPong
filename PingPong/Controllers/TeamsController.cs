@@ -129,7 +129,7 @@ namespace PingPong.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TeamExists((int)teamPlayerSelectionVM.TeamId))
+                    if (!await TeamExists((int)teamPlayerSelectionVM.TeamId))
                     {
                         return NotFound();
                     }
@@ -169,9 +169,9 @@ namespace PingPong.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool TeamExists(int id)
+        private async Task<bool> TeamExists(int id)
         {
-            return _teamRepository.FindOne(id) != null;
+            return await _teamRepository.FindOne(id) != null;
         }
 
         private async Task<TeamPlayerVm> ToTeamPlayerVm(Team team)

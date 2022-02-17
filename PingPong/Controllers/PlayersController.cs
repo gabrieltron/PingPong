@@ -97,7 +97,7 @@ namespace PingPong.Controllers
                 }
                 catch (SqlException)
                 {
-                    if (!PlayerExists(player.Id))
+                    if (!await PlayerExists(player.Id))
                     {
                         return NotFound();
                     }
@@ -137,9 +137,9 @@ namespace PingPong.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool PlayerExists(int id)
+        private async Task<bool> PlayerExists(int id)
         {
-            return _repository.FindOne(id) != null;
+            return await _repository.FindOne(id) != null;
         }
 
     }
