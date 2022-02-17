@@ -3,7 +3,9 @@ using PingPong.Models;
 
 namespace PingPong.Data
 {
-    public class GameRepository
+    public interface IGameRepository : ICrudRepository<Game, int> { }
+
+    public class GameRepository : IGameRepository
     {
         private readonly IDBConnectionFactory _connectionFactory;
 
@@ -57,6 +59,11 @@ namespace PingPong.Data
                 const string sql = "DELETE FROM Games WHERE Id = @Id";
                 await connection.QueryAsync(sql, new { id });
             }
+        }
+
+        public Task Update(Game model)
+        {
+            throw new NotImplementedException();
         }
     }
 }

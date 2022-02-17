@@ -8,10 +8,10 @@ namespace PingPong.Controllers
 {
     public class GamesController : Controller
     {
-        private readonly TeamRepository _teamRepository;
-        private readonly GameRepository _gameRepository;
+        private readonly ITeamRepository _teamRepository;
+        private readonly IGameRepository _gameRepository;
 
-        public GamesController(TeamRepository teamRepository, GameRepository gameRepository)
+        public GamesController(ITeamRepository teamRepository, IGameRepository gameRepository)
         {
             _teamRepository = teamRepository;
             _gameRepository = gameRepository;

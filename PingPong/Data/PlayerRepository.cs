@@ -3,7 +3,9 @@ using PingPong.Models;
 
 namespace PingPong.Data
 {
-    public class PlayerRepository
+    public interface IPlayerRepository : ICrudRepository<Player, int> {}
+
+    public class PlayerRepository : IPlayerRepository
     {
         private readonly IDBConnectionFactory _connectionFactory;
 

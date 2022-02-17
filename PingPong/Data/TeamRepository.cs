@@ -3,7 +3,9 @@ using PingPong.Models;
 
 namespace PingPong.Data
 {
-    public class TeamRepository
+    public interface ITeamRepository : ICrudRepository<Team, int> {}
+
+    public class TeamRepository : ITeamRepository
     {
         private readonly IDBConnectionFactory _connectionFactory;
 

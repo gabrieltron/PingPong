@@ -8,9 +8,9 @@ namespace PingPong.Controllers
 {
     public class PlayersController : Controller
     {
-        private readonly PlayerRepository _repository;
+        private readonly IPlayerRepository _repository;
 
-        public PlayersController(PlayerRepository repository)
+        public PlayersController(IPlayerRepository repository)
         {
             _repository = repository;
         }

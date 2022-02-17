@@ -5,9 +5,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddSingleton<IDBConnectionFactory, DBConnectionFactory>();
 
-builder.Services.AddScoped<PlayerRepository>();
-builder.Services.AddScoped<TeamRepository>();
-builder.Services.AddScoped<GameRepository>();
+builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
+builder.Services.AddScoped<ITeamRepository, TeamRepository>();
+builder.Services.AddScoped<IGameRepository, GameRepository>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
