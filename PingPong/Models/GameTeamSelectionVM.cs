@@ -12,6 +12,8 @@ namespace PingPong.Models
 
         public SelectList? Teams{ get; set; }
 
+        public uint NTeams { get; set; }
+
         [Required]
         public int SelectedTeamOneId { get; set; }
         [Required]

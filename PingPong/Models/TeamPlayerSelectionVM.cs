@@ -13,6 +13,8 @@ namespace PingPong.Models
 
         public SelectList? Players { get; set; }
 
+        public uint NSelectedPlayers { get; set; }
+
         [Required]
         public int SelectedPlayerOneId { get; set; }
         public int? SelectedPlayerTwoId { get; set; }
