@@ -27,12 +27,14 @@
                     <select asp-for="SelectedPlayerOneId" asp-items="Model.Players">
                         <option value="">Select Player</option>
                     </select>
+                    <span asp-validation-for="SelectedPlayerOneId" class="text-danger"></span>
                 </div>
                 <div id="player-two-dropdown">
                     Player Two:
                     <select asp-for="SelectedPlayerTwoId" asp-items="Model.Players" id="player-two-selector">
                         <option value="">Select Player</option>
                     </select>
+                    <span asp-validation-for="SelectedPlayerTwoId" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-group">

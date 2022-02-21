@@ -63,8 +63,7 @@ namespace PingPong.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("TeamName,NSelectedPlayers,SelectedPlayerOneId,SelectedPlayerTwoId")] TeamPlayerSelectionVM teamPlayerSelectionVM)
+        public async Task<IActionResult> Create(TeamPlayerSelectionVM teamPlayerSelectionVM)
         {
             if (ModelState.IsValid)
             {
@@ -80,7 +79,12 @@ namespace PingPong.Controllers
                 await _teamRepository.Create(newTeam);
                 return RedirectToAction(nameof(Index));
             }
-            return RedirectToAction(nameof(Create));
+            var players = await _playerRepository.FindAll();
+            var playersVm = new TeamPlayerSelectionVM
+            {
+                Players = new SelectList(players, nameof(Player.Id), nameof(Player.Name))
+            };
+            return View(playersVm);
         }
 
         // GET: Teams/Edit/5
