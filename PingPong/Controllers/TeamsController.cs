@@ -50,10 +50,9 @@ namespace PingPong.Controllers
         // GET: Teams/Create
         public async Task<IActionResult> Create()
         {
-            var players = await _playerRepository.FindAll();
             var playersVm = new TeamPlayerSelectionVM
             {
-                Players = new SelectList(players, nameof(Player.Id), nameof(Player.Name))
+                Players = await GetPlayerSelectList()
             };
             return View(playersVm);
         }
@@ -79,10 +78,9 @@ namespace PingPong.Controllers
                 await _teamRepository.Create(newTeam);
                 return RedirectToAction(nameof(Index));
             }
-            var players = await _playerRepository.FindAll();
             var playersVm = new TeamPlayerSelectionVM
             {
-                Players = new SelectList(players, nameof(Player.Id), nameof(Player.Name))
+                Players = await GetPlayerSelectList()
             };
             return View(playersVm);
         }
@@ -101,13 +99,13 @@ namespace PingPong.Controllers
                 return NotFound();
             }
 
-            var players = await _playerRepository.FindAll();
             var playersVm = new TeamPlayerSelectionVM
             {
                 TeamId = team.Id,
                 TeamName = team.Name,
-                Players = new SelectList(players, nameof(Player.Id), nameof(Player.Name)),
-                SelectedPlayerOneId = team.PlayerOneId
+                Players = await GetPlayerSelectList(),
+                SelectedPlayerOneId = team.PlayerOneId,
+                SelectedPlayerTwoId = team.PlayerTwoId
             };
             return View(playersVm);
         }
@@ -117,8 +115,7 @@ namespace PingPong.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,
-            [Bind("TeamId, TeamName,SelectedPlayerOneId,SelectedPlayerTwoId")] TeamPlayerSelectionVM teamPlayerSelectionVM)
+        public async Task<IActionResult> Edit(int id, TeamPlayerSelectionVM teamPlayerSelectionVM)
         {
             if (id != teamPlayerSelectionVM.TeamId)
             {
@@ -148,7 +145,15 @@ namespace PingPong.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return RedirectToAction(nameof(Edit), teamPlayerSelectionVM.TeamId);
+            var newTeamPlayerSelectionVM = new TeamPlayerSelectionVM
+            {
+                TeamId = teamPlayerSelectionVM.TeamId,
+                TeamName = teamPlayerSelectionVM.TeamName,
+                Players = await GetPlayerSelectList(),
+                SelectedPlayerOneId = teamPlayerSelectionVM.SelectedPlayerOneId,
+                SelectedPlayerTwoId = teamPlayerSelectionVM.SelectedPlayerTwoId
+            };
+            return View(newTeamPlayerSelectionVM);
         }
 
         // GET: Teams/Delete/5
@@ -180,6 +185,12 @@ namespace PingPong.Controllers
         private async Task<bool> TeamExists(int id)
         {
             return await _teamRepository.FindOne(id) != null;
+        }
+
+        private async Task<SelectList> GetPlayerSelectList()
+        {
+            var players = await _playerRepository.FindAll();
+            return new SelectList(players, nameof(Player.Id), nameof(Player.Name));
         }
 
         private async Task<TeamPlayerVm> ToTeamPlayerVm(Team team)
