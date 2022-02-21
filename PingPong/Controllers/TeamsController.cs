@@ -69,12 +69,9 @@ namespace PingPong.Controllers
                 var newTeam = new Team
                 {
                     Name = teamPlayerSelectionVM.TeamName,
-                    PlayerOneId = teamPlayerSelectionVM.SelectedPlayerOneId
+                    PlayerOneId = teamPlayerSelectionVM.SelectedPlayerOneId,
+                    PlayerTwoId = teamPlayerSelectionVM.SelectedPlayerTwoId
                 };
-                if (teamPlayerSelectionVM.NSelectedPlayers > 1)
-                {
-                    newTeam.PlayerTwoId = teamPlayerSelectionVM.SelectedPlayerTwoId;
-                }
                 await _teamRepository.Create(newTeam);
                 return RedirectToAction(nameof(Index));
             }
