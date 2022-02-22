@@ -2,13 +2,13 @@
 
 @{
     ViewData["Title"] = "Create";
-    IEnumerable<Team> TeamsWithSelectedSize;
+    IEnumerable<Team> teamsWithSelectedSize;
     if (Model.TeamsSize == 1)
     {
-        TeamsWithSelectedSize = Model.SingleTeams;
+        teamsWithSelectedSize = Model.SingleTeams;
     } else
     {
-        TeamsWithSelectedSize = Model.DoubleTeams;
+        teamsWithSelectedSize = Model.DoubleTeams;
     }
 }
 
@@ -39,7 +39,7 @@
             </div>
             <div class="form-group">
                 Team one:
-                <select asp-for="SelectedTeamOneId" asp-items="@(new SelectList(TeamsWithSelectedSize,nameof(Team.Id),nameof(Team.Name),Model.SelectedTeamOneId))" class="team-selector">
+                <select asp-for="SelectedTeamOneId" asp-items="@(new SelectList(teamsWithSelectedSize,nameof(Team.Id),nameof(Team.Name),Model.SelectedTeamOneId))" class="team-selector">
                     <option value="">Select Team</option>
                 </select>
                 <span asp-validation-for="SelectedTeamOneId" class="text-danger"></span>
@@ -51,7 +51,7 @@
             </div>
             <div class="form-group">
                 Team Two:
-                <select asp-for="SelectedTeamTwoId" asp-items="@(new SelectList(TeamsWithSelectedSize,nameof(Team.Id),nameof(Team.Name),Model.SelectedTeamTwoId))" asp- class="team-selector">
+                <select asp-for="SelectedTeamTwoId" asp-items="@(new SelectList(teamsWithSelectedSize,nameof(Team.Id),nameof(Team.Name),Model.SelectedTeamTwoId))" asp- class="team-selector">
                     <option value="">Select Team</option>
                 </select>
                 <span asp-validation-for="SelectedTeamTwoId" class="text-danger"></span>
