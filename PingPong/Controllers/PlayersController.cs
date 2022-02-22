@@ -50,7 +50,7 @@ namespace PingPong.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Player player)
+        public async Task<IActionResult> Create(Player player)
         {
             if (ModelState.IsValid)
             {
@@ -81,7 +81,7 @@ namespace PingPong.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Player player)
+        public async Task<IActionResult> Edit(int id, Player player)
         {
             if (id != player.Id)
             {

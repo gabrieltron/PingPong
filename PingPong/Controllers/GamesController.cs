@@ -63,8 +63,7 @@ namespace PingPong.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("Date,TeamOneScore,SelectedTeamOneId,TeamTwoScore,SelectedTeamTwoId")] GameTeamSelectionVM gameTeamSelectionVM)
+        public async Task<IActionResult> Create(GameTeamSelectionVM gameTeamSelectionVM)
         {
             if (ModelState.IsValid)
             {
