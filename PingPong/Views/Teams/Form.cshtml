@@ -19,20 +19,29 @@
                 <span asp-validation-for="TeamName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input asp-for="NSelectedPlayers" type="radio" name="NSelectedPlayers" value=1 /> 1 Player
-                <input asp-for="NSelectedPlayers" type="radio" name="NSelectedPlayers" checked="checked" value=2 /> 2 Players
+                @if(Model.NPlayers == 1)
+                {
+                    @:<input asp-for="NPlayers" type="radio" name="NPlayers" checked="checked" value=1 /> 1 Player
+                    @:<input asp-for="NPlayers" type="radio" name="NPlayers" value=2 /> 2 Players
+                } else
+                {
+                    @:<input asp-for="NPlayers" type="radio" name="NPlayers" value=1 /> 1 Player
+                    @:<input asp-for="NPlayers" type="radio" name="NPlayers" checked="checked" value=2 /> 2 Players
+                }
             </div>
             <div class="form-group">
                 <div id="player-one-dropdown">
                     Player One: 
-                    <select asp-for="SelectedPlayerOneId" asp-items="Model.Players">
+                    <select asp-for="SelectedPlayerOneId" asp-items="@(new SelectList(Model.Players,nameof(Player.Id),nameof(Player.Name),Model.SelectedPlayerOneId))">
                         <option value="">Select Player</option>
                     </select>
                     <span asp-validation-for="SelectedPlayerOneId" class="text-danger"></span>
                 </div>
-                <div id="player-two-dropdown">
+                <div id="player-two-dropdown" @if(Model.SelectedPlayerTwoId == null) {
+                    @:style="display:none;"
+                }>
                     Player Two:
-                    <select asp-for="SelectedPlayerTwoId" asp-items="Model.Players" id="player-two-selector">
+                    <select asp-for="SelectedPlayerTwoId" asp-items="@(new SelectList(Model.Players,nameof(Player.Id),nameof(Player.Name),Model.SelectedPlayerTwoId))" id="player-two-selector">
                         <option value="">Select Player</option>
                     </select>
                     <span asp-validation-for="SelectedPlayerTwoId" class="text-danger"></span>

@@ -52,8 +52,8 @@ namespace PingPong.Controllers
         {
             var playersVm = new TeamPlayerSelectionVM
             {
-                Players = await GetPlayerSelectList()
-            };
+                Players = await _playerRepository.FindAll()
+        };
             return View("Form", playersVm);
         }
 
@@ -78,7 +78,12 @@ namespace PingPong.Controllers
             }
             var playersVm = new TeamPlayerSelectionVM
             {
-                Players = await GetPlayerSelectList()
+                TeamId = teamPlayerSelectionVM.TeamId,
+                TeamName = teamPlayerSelectionVM.TeamName,
+                Players = await _playerRepository.FindAll(),
+                NPlayers = teamPlayerSelectionVM.NPlayers,
+                SelectedPlayerOneId = teamPlayerSelectionVM.SelectedPlayerOneId,
+                SelectedPlayerTwoId = teamPlayerSelectionVM.SelectedPlayerTwoId
             };
             return View("Form", playersVm);
         }
@@ -101,7 +106,8 @@ namespace PingPong.Controllers
             {
                 TeamId = team.Id,
                 TeamName = team.Name,
-                Players = await GetPlayerSelectList(),
+                Players = await _playerRepository.FindAll(),
+                NPlayers = team.PlayerTwoId == null ? 1u : 2u,
                 SelectedPlayerOneId = team.PlayerOneId,
                 SelectedPlayerTwoId = team.PlayerTwoId
             };
@@ -148,7 +154,8 @@ namespace PingPong.Controllers
             {
                 TeamId = teamPlayerSelectionVM.TeamId,
                 TeamName = teamPlayerSelectionVM.TeamName,
-                Players = await GetPlayerSelectList(),
+                Players = await _playerRepository.FindAll(),
+                NPlayers = teamPlayerSelectionVM.NPlayers,
                 SelectedPlayerOneId = teamPlayerSelectionVM.SelectedPlayerOneId,
                 SelectedPlayerTwoId = teamPlayerSelectionVM.SelectedPlayerTwoId
             };
@@ -184,12 +191,6 @@ namespace PingPong.Controllers
         private async Task<bool> TeamExists(int id)
         {
             return await _teamRepository.FindOne(id) != null;
-        }
-
-        private async Task<SelectList> GetPlayerSelectList()
-        {
-            var players = await _playerRepository.FindAll();
-            return new SelectList(players, nameof(Player.Id), nameof(Player.Name));
         }
 
         private async Task<TeamPlayerVm> ToTeamPlayerVm(Team team)

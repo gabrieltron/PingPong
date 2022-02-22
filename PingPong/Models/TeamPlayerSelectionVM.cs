@@ -12,9 +12,9 @@ namespace PingPong.Models
         [Display(Name = "Name")]
         public string? TeamName { get; set; }
 
-        public SelectList? Players { get; set; }
+        public IEnumerable<Player>? Players { get; set; }
 
-        public uint NSelectedPlayers { get; set; }
+        public uint NPlayers { get; set; }
 
         [Required(ErrorMessage = "Select a player")]
         public int SelectedPlayerOneId { get; set; }
@@ -27,7 +27,7 @@ namespace PingPong.Models
         {
             protected override ValidationResult IsValid(object value, ValidationContext validationContext)
             {
-                var nPlayersProperty = validationContext.ObjectType.GetProperty(nameof(TeamPlayerSelectionVM.NSelectedPlayers));
+                var nPlayersProperty = validationContext.ObjectType.GetProperty(nameof(TeamPlayerSelectionVM.NPlayers));
                 var nPlayers =(uint)nPlayersProperty.GetValue(validationContext.ObjectInstance, null);
                 if (nPlayers > 1 && value == null)
                 {
