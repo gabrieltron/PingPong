@@ -80,7 +80,15 @@ namespace PingPong.Controllers
                 await _gameRepository.Create(game);
                 return RedirectToAction(nameof(Index));
             }
-            return View(gameTeamSelectionVM);
+
+            var singleTeams = await _teamRepository.FindSingleTeams();
+            var doubleTeams = await _teamRepository.FindDoubleTeams();
+            var newGameTeamSelectionVM = new GameTeamSelectionVM
+            {
+                SingleTeams = new SelectList(singleTeams, nameof(Team.Id), nameof(Team.Name)),
+                DoubleTeams = new SelectList(doubleTeams, nameof(Team.Id), nameof(Team.Name))
+            };
+            return View(newGameTeamSelectionVM);
         }
 
         // GET: Games/Delete/5

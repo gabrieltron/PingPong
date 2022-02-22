@@ -27,6 +27,7 @@
                 <select asp-for="SelectedTeamOneId" asp-items="Model.DoubleTeams" class="team-selector">
                     <option value="">Select Team</option>
                 </select>
+                <span asp-validation-for="SelectedTeamOneId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="TeamOneScore" class="control-label"></label>
@@ -38,6 +39,7 @@
                 <select asp-for="SelectedTeamTwoId" asp-items="Model.DoubleTeams" class="team-selector">
                     <option value="">Select Team</option>
                 </select>
+                <span asp-validation-for="SelectedTeamTwoId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="TeamTwoScore" class="control-label"></label>
