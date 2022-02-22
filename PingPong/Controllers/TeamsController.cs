@@ -64,6 +64,7 @@ namespace PingPong.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(TeamPlayerSelectionVM teamPlayerSelectionVM)
         {
+            await CheckTeamIsUnique(teamPlayerSelectionVM);
             if (ModelState.IsValid)
             {
                 var newTeam = new Team
@@ -119,6 +120,7 @@ namespace PingPong.Controllers
                 return NotFound();
             }
 
+            await CheckTeamIsUnique(teamPlayerSelectionVM);
             if (ModelState.IsValid)
             {
                 try
@@ -205,6 +207,18 @@ namespace PingPong.Controllers
                 PlayerOne = playerOne,
                 PlayerTwo = playerTwo
             };
+        }
+
+        private async Task CheckTeamIsUnique(TeamPlayerSelectionVM teamPlayerSelectionVM)
+        {
+            var firstPlayerId = teamPlayerSelectionVM.SelectedPlayerOneId;
+            var secondPlayerId = teamPlayerSelectionVM.SelectedPlayerTwoId;
+            var existingTeam = await _teamRepository.FindByPlayers(firstPlayerId, secondPlayerId);
+            if (existingTeam != null)
+            {
+                const string errorMessage = "A team with the same players already exists";
+                ModelState.AddModelError(String.Empty, errorMessage);
+            }
         }
     }
 }

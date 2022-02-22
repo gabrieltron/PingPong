@@ -6,6 +6,8 @@ namespace PingPong.Data
     public interface ITeamRepository : ICrudRepository<Team, int> {
         public Task<IEnumerable<Team>> FindSingleTeams();
         public Task<IEnumerable<Team>> FindDoubleTeams();
+
+        public Task<Team> FindByPlayers(int firstPlayerId, int? secondPlayerId);
     }
 
     public class TeamRepository : ITeamRepository
@@ -90,5 +92,24 @@ namespace PingPong.Data
             }
         }
 
+        public async Task<Team> FindByPlayers(int firstPlayerId, int? secondPlayerId)
+        {
+            using (var connection = _connectionFactory.GetConnection())
+            {
+                string sql;
+                if (secondPlayerId == null)
+                {
+                    sql = @"SELECT * FROM Teams
+                        WHERE @FirstPlayerId = PlayerOneId
+                        AND @SecondPlayerId IS NULL";
+                } else
+                {
+                    sql = @"SELECT * FROM Teams
+                        WHERE @FirstPlayerId IN (PlayerOneId, PlayerTwoId) 
+                        AND @SecondPlayerId IN (PlayerOneId, PlayerTwoId)";
+                }
+                return await connection.QueryFirstOrDefaultAsync<Team>(sql, new { firstPlayerId, secondPlayerId });
+            }
+        }
     }
 }
