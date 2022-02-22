@@ -8,11 +8,13 @@ namespace PingPong.Models
         public int? GameId { get; set; }
 
         [Required]
-        public DateTime Date{ get; set; }
+        public DateTime Date { get; set; }
 
-        public SelectList? Teams{ get; set; }
+        public uint TeamSize { get; set; }
 
-        public uint NTeams { get; set; }
+        public SelectList SingleTeams { get; set; }
+
+        public SelectList DoubleTeams { get; set; }
 
         [Required]
         public int SelectedTeamOneId { get; set; }

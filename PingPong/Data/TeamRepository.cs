@@ -3,7 +3,10 @@ using PingPong.Models;
 
 namespace PingPong.Data
 {
-    public interface ITeamRepository : ICrudRepository<Team, int> {}
+    public interface ITeamRepository : ICrudRepository<Team, int> {
+        public Task<IEnumerable<Team>> FindSingleTeams();
+        public Task<IEnumerable<Team>> FindDoubleTeams();
+    }
 
     public class TeamRepository : ITeamRepository
     {
@@ -20,6 +23,28 @@ namespace PingPong.Data
             using (var connection = _connectionFactory.GetConnection())
             {
                 const string sql = "SELECT * FROM Teams";
+                teams = await connection.QueryAsync<Team>(sql);
+            }
+            return teams;
+        }
+
+        public async Task<IEnumerable<Team>> FindSingleTeams()
+        {
+            IEnumerable<Team> teams;
+            using (var connection = _connectionFactory.GetConnection())
+            {
+                const string sql = "SELECT * FROM Teams WHERE PlayerTwoId IS NULL";
+                teams = await connection.QueryAsync<Team>(sql);
+            }
+            return teams;
+        }
+
+        public async Task<IEnumerable<Team>> FindDoubleTeams()
+        {
+            IEnumerable<Team> teams;
+            using (var connection = _connectionFactory.GetConnection())
+            {
+                const string sql = "SELECT * FROM Teams WHERE PlayerTwoId IS NOT NULL";
                 teams = await connection.QueryAsync<Team>(sql);
             }
             return teams;

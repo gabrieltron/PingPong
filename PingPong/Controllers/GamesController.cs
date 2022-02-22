@@ -50,10 +50,12 @@ namespace PingPong.Controllers
         // GET: Games/Create
         public async Task<IActionResult> Create()
         {
-            var teams = await _teamRepository.FindAll();
+            var singleTeams = await _teamRepository.FindSingleTeams();
+            var doubleTeams = await _teamRepository.FindDoubleTeams();
             var gameTeamSelectionVM = new GameTeamSelectionVM
             {
-                Teams = new SelectList(teams, nameof(Team.Id), nameof(Team.Name))
+                SingleTeams = new SelectList(singleTeams, nameof(Team.Id), nameof(Team.Name)),
+                DoubleTeams = new SelectList(doubleTeams, nameof(Team.Id), nameof(Team.Name))
             };
             return View(gameTeamSelectionVM);
         }
