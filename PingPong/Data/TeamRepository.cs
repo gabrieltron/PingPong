@@ -101,7 +101,7 @@ namespace PingPong.Data
                 {
                     sql = @"SELECT * FROM Teams
                         WHERE @FirstPlayerId = PlayerOneId
-                        AND @SecondPlayerId IS NULL";
+                        AND PlayerTwoId IS NULL";
                 } else
                 {
                     sql = @"SELECT * FROM Teams
