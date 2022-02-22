@@ -42,7 +42,7 @@ namespace PingPong.Controllers
         // GET: Players/Create
         public IActionResult Create()
         {
-            return View();
+            return View("Form");
         }
 
         // POST: Players/Create
@@ -57,7 +57,7 @@ namespace PingPong.Controllers
                 await _repository.Create(player);
                 return RedirectToAction(nameof(Index));
             }
-            return View(player);
+            return View("Form", player);
         }
         
         // GET: Players/Edit/5
@@ -73,7 +73,7 @@ namespace PingPong.Controllers
             {
                 return NotFound();
             }
-            return View(player);
+            return View("Form", player);
         }
 
         // POST: Players/Edit/5
@@ -96,7 +96,7 @@ namespace PingPong.Controllers
                 }
                 catch (SqlException)
                 {
-                    if (!await PlayerExists(player.Id))
+                    if (!await PlayerExists((int)player.Id))
                     {
                         return NotFound();
                     }
@@ -107,7 +107,7 @@ namespace PingPong.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(player);
+            return View("Form", player);
         }
 
         // GET: Players/Delete/5

@@ -1,24 +1,25 @@
 ﻿@model PingPong.Models.Player
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = @ViewContext.RouteData.Values["action"];
 }
 
-<h1>Create</h1>
+<h1>@ViewContext.RouteData.Values["action"]</h1>
 
 <h4>Player</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="@ViewContext.RouteData.Values["action"]">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="@ViewContext.RouteData.Values["action"]" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -30,4 +31,5 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
 }

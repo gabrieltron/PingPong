@@ -54,7 +54,7 @@ namespace PingPong.Controllers
             {
                 Players = await GetPlayerSelectList()
             };
-            return View(playersVm);
+            return View("Form", playersVm);
         }
 
         // POST: Teams/Create
@@ -80,7 +80,7 @@ namespace PingPong.Controllers
             {
                 Players = await GetPlayerSelectList()
             };
-            return View(playersVm);
+            return View("Form", playersVm);
         }
 
         // GET: Teams/Edit/5
@@ -105,7 +105,7 @@ namespace PingPong.Controllers
                 SelectedPlayerOneId = team.PlayerOneId,
                 SelectedPlayerTwoId = team.PlayerTwoId
             };
-            return View(playersVm);
+            return View("Form", playersVm);
         }
 
         // POST: Teams/Edit/5
@@ -152,7 +152,7 @@ namespace PingPong.Controllers
                 SelectedPlayerOneId = teamPlayerSelectionVM.SelectedPlayerOneId,
                 SelectedPlayerTwoId = teamPlayerSelectionVM.SelectedPlayerTwoId
             };
-            return View(newTeamPlayerSelectionVM);
+            return View("Form", newTeamPlayerSelectionVM);
         }
 
         // GET: Teams/Delete/5

@@ -6,7 +6,7 @@ namespace PingPong.Models
     [Table("Players")]
     public class Player
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         [Required]
         public string? Name { get; set; }
