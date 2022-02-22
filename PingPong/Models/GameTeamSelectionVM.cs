@@ -9,9 +9,11 @@ namespace PingPong.Models
         [Required]
         public DateTime Date { get; set; }
 
-        public SelectList? SingleTeams { get; set; }
+        public uint TeamsSize { get; set; }
 
-        public SelectList? DoubleTeams { get; set; }
+        public IEnumerable<Team>? SingleTeams { get; set; }
+
+        public IEnumerable<Team>? DoubleTeams { get; set; }
 
         [Required(ErrorMessage = "Select a team")]
         public int SelectedTeamOneId { get; set; }

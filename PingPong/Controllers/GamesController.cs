@@ -50,12 +50,10 @@ namespace PingPong.Controllers
         // GET: Games/Create
         public async Task<IActionResult> Create()
         {
-            var singleTeams = await _teamRepository.FindSingleTeams();
-            var doubleTeams = await _teamRepository.FindDoubleTeams();
             var gameTeamSelectionVM = new GameTeamSelectionVM
             {
-                SingleTeams = new SelectList(singleTeams, nameof(Team.Id), nameof(Team.Name)),
-                DoubleTeams = new SelectList(doubleTeams, nameof(Team.Id), nameof(Team.Name))
+                SingleTeams = await _teamRepository.FindSingleTeams(),
+                DoubleTeams = await _teamRepository.FindDoubleTeams()
             };
             return View(gameTeamSelectionVM);
         }
@@ -85,8 +83,11 @@ namespace PingPong.Controllers
             var doubleTeams = await _teamRepository.FindDoubleTeams();
             var newGameTeamSelectionVM = new GameTeamSelectionVM
             {
-                SingleTeams = new SelectList(singleTeams, nameof(Team.Id), nameof(Team.Name)),
-                DoubleTeams = new SelectList(doubleTeams, nameof(Team.Id), nameof(Team.Name))
+                TeamsSize = gameTeamSelectionVM.TeamsSize,
+                SingleTeams = await _teamRepository.FindSingleTeams(),
+                SelectedTeamOneId = gameTeamSelectionVM.SelectedTeamOneId,
+                DoubleTeams = await _teamRepository.FindDoubleTeams(),
+                SelectedTeamTwoId = gameTeamSelectionVM.SelectedTeamTwoId
             };
             return View(newGameTeamSelectionVM);
         }

@@ -2,6 +2,14 @@
 
 @{
     ViewData["Title"] = "Create";
+    IEnumerable<Team> TeamsWithSelectedSize;
+    if (Model.TeamsSize == 1)
+    {
+        TeamsWithSelectedSize = Model.SingleTeams;
+    } else
+    {
+        TeamsWithSelectedSize = Model.DoubleTeams;
+    }
 }
 
 <h1>Create</h1>
@@ -19,12 +27,19 @@
             </div>
             <div class="form-group">
                 Teams size:
-                <input type="radio" name="TeamsSize" value=1 /> 1 Player
-                <input type="radio" name="TeamsSize" checked="checked" value=2 /> 2 Players
+                @if(Model.TeamsSize == 1)
+                {
+                    @:<input asp-for="TeamsSize" type="radio" name="TeamsSize" checked="checked" value=1 /> 1 Player
+                    @:<input asp-for="TeamsSize" type="radio" name="TeamsSize" value=2 /> 2 Players
+                } else
+                {
+                    @:<input asp-for="TeamsSize" type="radio" name="TeamsSize" value=1 /> 1 Player
+                    @:<input asp-for="TeamsSize" type="radio" name="TeamsSize" checked="checked" value=2 /> 2 Players
+                }
             </div>
             <div class="form-group">
                 Team one:
-                <select asp-for="SelectedTeamOneId" asp-items="Model.DoubleTeams" class="team-selector">
+                <select asp-for="SelectedTeamOneId" asp-items="@(new SelectList(TeamsWithSelectedSize,nameof(Team.Id),nameof(Team.Name),Model.SelectedTeamOneId))" class="team-selector">
                     <option value="">Select Team</option>
                 </select>
                 <span asp-validation-for="SelectedTeamOneId" class="text-danger"></span>
@@ -36,7 +51,7 @@
             </div>
             <div class="form-group">
                 Team Two:
-                <select asp-for="SelectedTeamTwoId" asp-items="Model.DoubleTeams" class="team-selector">
+                <select asp-for="SelectedTeamTwoId" asp-items="@(new SelectList(TeamsWithSelectedSize,nameof(Team.Id),nameof(Team.Name),Model.SelectedTeamTwoId))" asp- class="team-selector">
                     <option value="">Select Team</option>
                 </select>
                 <span asp-validation-for="SelectedTeamTwoId" class="text-danger"></span>
@@ -60,8 +75,8 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script type="text/javascript">
-        var doubleTeams = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DoubleTeams.Items));
-        var singleTeams = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.SingleTeams.Items));
+        var doubleTeams = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DoubleTeams));
+        var singleTeams = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.SingleTeams));
     </script>
     <script src="~/js/games/team-selector.js"></script>
 }
