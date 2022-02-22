@@ -19,13 +19,22 @@ namespace PingPong.Data
             _connectionFactory = connectionFactory;
         }
 
+        private Team RelationshipMapper(Team team, Player playerOne, Player playerTwo)
+        {
+            team.PlayerOne = playerOne;
+            team.PlayerTwo = playerTwo;
+            return team;
+        }
+
         public async Task<IEnumerable<Team>> FindAll()
         {
             IEnumerable<Team> teams;
             using (var connection = _connectionFactory.GetConnection())
             {
-                const string sql = "SELECT * FROM Teams";
-                teams = await connection.QueryAsync<Team>(sql);
+                const string sql = @"SELECT * FROM Teams t
+                    LEFT JOIN Players p1 ON t.PlayerOneId = p1.id
+                    LEFT JOIN Players p2 ON t.PlayerTwoId = p2.id";
+                teams = await connection.QueryAsync<Team, Player, Player, Team>(sql, RelationshipMapper);
             }
             return teams;
         }
@@ -35,8 +44,11 @@ namespace PingPong.Data
             IEnumerable<Team> teams;
             using (var connection = _connectionFactory.GetConnection())
             {
-                const string sql = "SELECT * FROM Teams WHERE PlayerTwoId IS NULL";
-                teams = await connection.QueryAsync<Team>(sql);
+                const string sql = @"SELECT * FROM Teams t
+                    LEFT JOIN Players p1 ON t.PlayerOneId = p1.id
+                    LEFT JOIN Players p2 ON t.PlayerTwoId = p2.id
+                    WHERE PlayerTwoId IS NULL";
+                teams = await connection.QueryAsync<Team, Player, Player, Team>(sql, RelationshipMapper);
             }
             return teams;
         }
@@ -46,8 +58,11 @@ namespace PingPong.Data
             IEnumerable<Team> teams;
             using (var connection = _connectionFactory.GetConnection())
             {
-                const string sql = "SELECT * FROM Teams WHERE PlayerTwoId IS NOT NULL";
-                teams = await connection.QueryAsync<Team>(sql);
+                const string sql = @"SELECT * FROM Teams t
+                    LEFT JOIN Players p1 ON t.PlayerOneId = p1.id
+                    LEFT JOIN Players p2 ON t.PlayerTwoId = p2.id
+                    WHERE PlayerTwoId IS NOT NULL";
+                teams = await connection.QueryAsync<Team, Player, Player, Team>(sql, RelationshipMapper);
             }
             return teams;
         }
@@ -58,7 +73,11 @@ namespace PingPong.Data
             {
                 const string sql = @"INSERT INTO Teams(Name, PlayerOneId, PlayerTwoId)
                     values (@Name, @PlayerOneId, @PlayerTwoId)";
-                await connection.QueryAsync(sql, new { team.Name, team.PlayerOneId, team.PlayerTwoId });
+                await connection.QueryAsync(sql, new { 
+                    Name = team.Name, 
+                    PlayerOneId = team.PlayerOne.Id, 
+                    PlayerTwoId = team.PlayerTwo!.Id 
+                });
             }
         }
 
@@ -67,8 +86,12 @@ namespace PingPong.Data
             Team team;
             using (var connection = _connectionFactory.GetConnection())
             {
-                const string sql = "SELECT * FROM Teams WHERE Id = @Id";
-                team = await connection.QueryFirstOrDefaultAsync<Team>(sql, new { id });
+                const string sql = @"SELECT * FROM Teams t
+                    LEFT JOIN Players p1 ON t.PlayerOneId = p1.id
+                    LEFT JOIN Players p2 ON t.PlayerTwoId = p2.id
+                    WHERE t.Id = @Id";
+                team = (await connection.QueryAsync<Team, Player, Player, Team>(sql, RelationshipMapper,
+                    new { id }))?.FirstOrDefault();
             }
             return team;
         }
@@ -79,7 +102,13 @@ namespace PingPong.Data
             {
                 const string sql = @"UPDATE Teams SET Name = @Name, PlayerOneId = @PlayerOneId, PlayerTwoId = @PlayerTwoId
                     WHERE Id = @Id";
-                await connection.QueryAsync(sql, new { team.Name, team.PlayerOneId, team.PlayerTwoId, team.Id });
+                await connection.QueryAsync(sql, new
+                {
+                    Name = team.Name,
+                    PlayerOneId = team.PlayerOne.Id,
+                    PlayerTwoId = team.PlayerTwo!.Id,
+                    Id = team.Id
+                });
             }
         }
 
@@ -99,16 +128,21 @@ namespace PingPong.Data
                 string sql;
                 if (secondPlayerId == null)
                 {
-                    sql = @"SELECT * FROM Teams
+                    sql = @"SELECT * FROM Teams t
+                        LEFT JOIN Players p1 ON t.PlayerOneId = p1.id
+                        LEFT JOIN Players p2 ON t.PlayerTwoId = p2.id
                         WHERE @FirstPlayerId = PlayerOneId
                         AND PlayerTwoId IS NULL";
                 } else
                 {
-                    sql = @"SELECT * FROM Teams
+                    sql = @"SELECT * FROM Teams t
+                        LEFT JOIN Players p1 ON t.PlayerOneId = p1.id
+                        LEFT JOIN Players p2 ON t.PlayerTwoId = p2.id
                         WHERE @FirstPlayerId IN (PlayerOneId, PlayerTwoId) 
                         AND @SecondPlayerId IN (PlayerOneId, PlayerTwoId)";
                 }
-                return await connection.QueryFirstOrDefaultAsync<Team>(sql, new { firstPlayerId, secondPlayerId });
+                return (await connection.QueryAsync<Team, Player, Player, Team>(sql, RelationshipMapper,
+                    new { firstPlayerId, secondPlayerId }))?.FirstOrDefault();
             }
         }
     }

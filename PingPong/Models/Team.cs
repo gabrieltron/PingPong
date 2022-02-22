@@ -12,8 +12,8 @@ namespace PingPong.Models
         public string? Name { get; set; }
 
         [Required]
-        public int PlayerOneId { get; set; }
+        public Player PlayerOne { get; set; }
 
-        public int? PlayerTwoId { get; set;}
+        public Player? PlayerTwo { get; set;  }
     }
 }

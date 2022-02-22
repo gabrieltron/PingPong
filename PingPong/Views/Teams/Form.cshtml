@@ -37,7 +37,7 @@
                     </select>
                     <span asp-validation-for="SelectedPlayerOneId" class="text-danger"></span>
                 </div>
-                <div id="player-two-dropdown" @if(Model.SelectedPlayerTwoId == null) {
+                <div id="player-two-dropdown" @if(Model.NPlayers == 1) {
                     @:style="display:none;"
                 }>
                     Player Two:

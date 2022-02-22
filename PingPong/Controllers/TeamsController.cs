@@ -70,8 +70,8 @@ namespace PingPong.Controllers
                 var newTeam = new Team
                 {
                     Name = teamPlayerSelectionVM.TeamName,
-                    PlayerOneId = teamPlayerSelectionVM.SelectedPlayerOneId,
-                    PlayerTwoId = teamPlayerSelectionVM.SelectedPlayerTwoId
+                    PlayerOne = new Player { Id = teamPlayerSelectionVM.SelectedPlayerOneId },
+                    PlayerTwo = new Player { Id = teamPlayerSelectionVM.SelectedPlayerTwoId }
                 };
                 await _teamRepository.Create(newTeam);
                 return RedirectToAction(nameof(Index));
@@ -107,9 +107,9 @@ namespace PingPong.Controllers
                 TeamId = team.Id,
                 TeamName = team.Name,
                 Players = await _playerRepository.FindAll(),
-                NPlayers = team.PlayerTwoId == null ? 1u : 2u,
-                SelectedPlayerOneId = team.PlayerOneId,
-                SelectedPlayerTwoId = team.PlayerTwoId
+                NPlayers = team.PlayerTwo == null ? 1u : 2u,
+                SelectedPlayerOneId = (int)team.PlayerOne.Id,
+                SelectedPlayerTwoId = team.PlayerTwo?.Id
             };
             return View("Form", playersVm);
         }
@@ -133,8 +133,8 @@ namespace PingPong.Controllers
                 {
                     var team = await _teamRepository.FindOne((int)teamPlayerSelectionVM.TeamId);
                     team.Name = teamPlayerSelectionVM.TeamName;
-                    team.PlayerOneId = teamPlayerSelectionVM.SelectedPlayerOneId;
-                    team.PlayerTwoId = teamPlayerSelectionVM.SelectedPlayerTwoId;
+                    team.PlayerOne = new Player { Id = teamPlayerSelectionVM.SelectedPlayerOneId };
+                    team.PlayerTwo = new Player { Id = teamPlayerSelectionVM.SelectedPlayerTwoId };
                     await _teamRepository.Update(team);
                 }
                 catch (SqlException)
@@ -195,18 +195,12 @@ namespace PingPong.Controllers
 
         private async Task<TeamPlayerVm> ToTeamPlayerVm(Team team)
         {
-            var playerOne = await _playerRepository.FindOne(team.PlayerOneId);
-            Player playerTwo = null;
-            if (team.PlayerTwoId != null)
-            {
-                playerTwo = await _playerRepository.FindOne((int)team.PlayerTwoId);
-            } 
             return new TeamPlayerVm
             {
                 Id = team.Id,
                 Name = team.Name,
-                PlayerOne = playerOne,
-                PlayerTwo = playerTwo
+                PlayerOne = team.PlayerOne,
+                PlayerTwo = team.PlayerTwo
             };
         }
 
