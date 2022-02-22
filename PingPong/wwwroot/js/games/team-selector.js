@@ -1,10 +1,11 @@
 ﻿$(document).ready(function () {
     $("input[name$='TeamsSize']").click(function () {
+        var args = JSON.parse($("[data-role='js-args']").text());
         var teamsSize = $(this).val();
         if (teamsSize== 1) {
-            updateTeamSelectors(singleTeams);
+            updateTeamSelectors(args.SingleTeams);
         } else {
-            updateTeamSelectors(doubleTeams);
+            updateTeamSelectors(args.DoubleTeams);
         }
     });
 

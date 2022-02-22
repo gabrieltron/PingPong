@@ -74,9 +74,8 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script type="text/javascript">
-        var doubleTeams = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DoubleTeams));
-        var singleTeams = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.SingleTeams));
+    <script type="application/json" data-role="js-args">
+        @Html.Raw(System.Text.Json.JsonSerializer.Serialize(new { SingleTeams = Model.SingleTeams, DoubleTeams = Model.DoubleTeams }))
     </script>
     <script src="~/js/games/team-selector.js"></script>
 }
