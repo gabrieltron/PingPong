@@ -6,8 +6,9 @@ namespace PingPong.Models
     {
         public string Name { get; set; }
 
-        [Display(Name = "Win Ratio")]
-        public int WinRatio { get; set; }
+        public int Wins {  get; set; }
+
+        public int Loses { get; set; }
 
         [Display(Name = "Games Played")]
         public int GamesPlayed { get; set; }

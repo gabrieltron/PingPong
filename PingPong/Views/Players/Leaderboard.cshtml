@@ -13,7 +13,7 @@
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.WinRatio)
+                Wins / Loses
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.GamesPlayed)
@@ -27,7 +27,7 @@
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.WinRatio)
+                    @item.Wins / @item.Loses
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.GamesPlayed)

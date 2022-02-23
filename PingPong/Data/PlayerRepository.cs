@@ -72,21 +72,25 @@ namespace PingPong.Data
             {
                 const string sql = @"SELECT leaderboard.*, p.Name
                     FROM (
-	                    SELECT player.Id AS playerId, SUM(player.score) AS WinRatio, COUNT(player.Id) AS GamesPlayed
+	                    SELECT player.Id AS playerId, SUM(player.Wins) AS Wins, SUM(player.Loses) AS Loses, 
+							player.Id AS GamesPlayed, Wins-Loses AS WinRatio
 	                    FROM (
 		                    SELECT p.Id,
 			                    CASE WHEN (t.Id = g.TeamOneId AND g.TeamOneScore > g.TeamTwoScore)
 				                    OR (t.Id = g.TeamTwoId AND g.TeamTwoScore > g.TeamOneScore)
 				                    THEN 1
-			                    ELSE -1
-			                    END AS score
+			                    ELSE 0
+			                    END AS Wins,
+			                    CASE WHEN (t.Id = g.TeamOneId AND g.TeamOneScore < g.TeamTwoScore)
+				                    OR (t.Id = g.TeamTwoId AND g.TeamTwoScore < g.TeamOneScore)
+				                    THEN 1
+			                    ELSE 0
+			                    END AS Loses
 		                    FROM Players p
 		                    INNER JOIN Teams t ON p.Id IN (t.PlayerOneId, t.PlayerTwoId)
 		                    INNER JOIN Games g ON t.Id IN (g.TeamOneId, g.TeamTwoId)
 	                    ) AS player
-	                    GROUP BY player.Id
-	                    ORDER BY WinRatio DESC
-	                    OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY
+						GROUP BY player.Id, player.Wins, player.Loses
                     ) AS leaderboard
                     INNER JOIN Players p ON p.Id = leaderboard.playerId";
                 leaderboard = await connection.QueryAsync<PlayerLeaderboardVM>(sql, new { nPlayers });
