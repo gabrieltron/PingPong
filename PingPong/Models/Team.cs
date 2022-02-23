@@ -15,5 +15,10 @@ namespace PingPong.Models
         public Player PlayerOne { get; set; }
 
         public Player? PlayerTwo { get; set;  }
+
+        public bool HasPlayer(int id)
+        {
+            return PlayerOne.Id == id || (PlayerTwo?.Id == id);
+        }
     }
 }

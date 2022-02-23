@@ -1,7 +1,24 @@
-﻿@model PingPong.Models.Player
+﻿@model PingPong.Models.PlayerDetailsVM
 
 @{
     ViewData["Title"] = "Details";
+
+    void RenderName(string name)
+    {
+        <p>Name: <strong>@name</strong></p>
+    }
+}
+
+@functions {
+    void RenderPlayer(Player player) {
+        if (player.Id == Model.Id)
+        {
+            <b> @player.Name </b>
+        } else
+        {
+            @player.Name
+        } 
+    }
 }
 
 <h1>Details</h1>
@@ -16,6 +33,35 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Name)
         </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.LastGames)
+        </dt>
+        @foreach(var game in Model.LastGames)
+        {
+            <dt class = "col-sm-2" />
+            <dd class = "col-sm-10" 
+                @if(
+                    (game.TeamOne.HasPlayer(Model.Id) && game.TeamOneScore > game.TeamTwoScore)
+                    || (game.TeamTwo.HasPlayer(Model.Id) && game.TeamTwoScore > game.TeamOneScore)
+                ) {
+                    @:style="color:green;"
+                } else {
+                    @:style="color:red;"
+                }
+            >
+                @{RenderPlayer(game.TeamOne.PlayerOne);}
+                @if(game.TeamOne.PlayerTwo != null) {
+                    @:& @{RenderPlayer(game.TeamOne.PlayerTwo);}
+                }
+                - @game.TeamOneScore
+                |
+                @game.TeamTwoScore
+                - @{RenderPlayer(game.TeamTwo.PlayerOne);}
+                @if(game.TeamTwo.PlayerTwo != null) {
+                    @:& @{RenderPlayer(game.TeamTwo.PlayerTwo);}
+                }
+            </dd>
+        }
     </dl>
 </div>
 <div>

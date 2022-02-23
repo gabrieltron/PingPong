@@ -9,10 +9,12 @@ namespace PingPong.Controllers
     public class PlayersController : Controller
     {
         private readonly IPlayerRepository _repository;
+        private readonly IGameRepository _gameRepository;
 
-        public PlayersController(IPlayerRepository repository)
+        public PlayersController(IPlayerRepository repository, IGameRepository gameRepository)
         {
             _repository = repository;
+            _gameRepository = gameRepository;
         }
 
         // GET: Players
@@ -25,6 +27,8 @@ namespace PingPong.Controllers
         // GET: Players/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            const int nLastGames = 10;
+
             if (id == null)
             {
                 return NotFound();
@@ -36,7 +40,14 @@ namespace PingPong.Controllers
                 return NotFound();
             }
 
-            return View(player);
+            var playerDetailsVM = new PlayerDetailsVM
+            {
+                Id = (int)id,
+                Name = player.Name,
+                LastGames = await _gameRepository.FindLastGamesFromPlayers((int)id, nLastGames)
+            };
+
+            return View(playerDetailsVM);
         }
 
         // GET: Players/Create
