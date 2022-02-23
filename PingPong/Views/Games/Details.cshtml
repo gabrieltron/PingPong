@@ -4,6 +4,19 @@
     ViewData["Title"] = "Details";
 }
 
+@functions {
+    void RenderTeamName(GameTeamVM game, Team team)
+    {
+        if ((game.TeamOne.Id == team.Id && game.TeamOneScore > game.TeamTwoScore)
+            || (game.TeamTwo.Id == team.Id && game.TeamTwoScore> game.TeamOneScore))
+        {
+            <b> @Html.DisplayFor(model => model.TeamOne.Name) </b>
+        } else {
+            @Html.DisplayFor(model => model.TeamOne.Name)
+        }
+    }
+}
+
 <h1>Details</h1>
 
 <div>
@@ -20,7 +33,7 @@
             @Html.DisplayNameFor(model => model.TeamOne)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TeamOne.Name)
+            @{RenderTeamName(Model, Model.TeamOne);}
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.TeamOneScore)
@@ -32,7 +45,7 @@
             @Html.DisplayNameFor(model => model.TeamTwo)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TeamTwo.Name)
+            @{RenderTeamName(Model, Model.TeamTwo);}
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.TeamTwoScore)
