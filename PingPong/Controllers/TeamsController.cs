@@ -32,6 +32,18 @@ namespace PingPong.Controllers
             return View(teamPlayerVms);
         }
 
+        public async Task<IActionResult> Leaderboard()
+        {
+            const int singleLeaderboardSize = 3;
+            const int doubleLeaderboardSize = 3;
+            var leaderboardVM = new TeamLeaderboardVM
+            {
+                SingleTeamLeaderboards = await _teamRepository.FindSingleTeamLeaderboard(singleLeaderboardSize),
+                DoubleTeamLeaderboards = await _teamRepository.FindDoubleTeamLeaderboard(doubleLeaderboardSize)
+            };
+            return View(leaderboardVM);
+        }
+
         // GET: Teams/Details/5
         public async Task<IActionResult> Details(int? id)
         {

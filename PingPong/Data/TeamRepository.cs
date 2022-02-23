@@ -8,6 +8,9 @@ namespace PingPong.Data
         public Task<IEnumerable<Team>> FindDoubleTeams();
 
         public Task<Team> FindByPlayers(int firstPlayerId, int? secondPlayerId);
+
+        public Task<IEnumerable<LeaderboardVM>> FindSingleTeamLeaderboard(int nTeams);
+        public Task<IEnumerable<LeaderboardVM>> FindDoubleTeamLeaderboard(int nTeams);
     }
 
     public class TeamRepository : ITeamRepository
@@ -136,6 +139,74 @@ namespace PingPong.Data
                 return (await connection.QueryAsync<Team, Player, Player, Team>(sql, DataHelper.RelationshipMapper,
                     new { firstPlayerId, secondPlayerId }))?.FirstOrDefault();
             }
+        }
+
+        public async Task<IEnumerable<LeaderboardVM>> FindSingleTeamLeaderboard(int nTeams)
+        {
+            IEnumerable<LeaderboardVM> leaderboard;
+            using (var connection = _connectionFactory.GetConnection())
+            {
+                const string sql = @"SELECT leaderboard.*, t.Name
+                    FROM (
+	                    SELECT team.Id AS Id, SUM(team.Wins) AS Wins, SUM(team.Loses) AS Loses
+	                    FROM (
+		                    SELECT t.Id,
+			                    CASE WHEN (t.Id = g.TeamOneId AND g.TeamOneScore > g.TeamTwoScore)
+				                    OR (t.Id = g.TeamTwoId AND g.TeamTwoScore > g.TeamOneScore)
+				                    THEN 1
+			                    ELSE 0
+			                    END AS Wins,
+			                    CASE WHEN (t.Id = g.TeamOneId AND g.TeamOneScore < g.TeamTwoScore)
+				                    OR (t.Id = g.TeamTwoId AND g.TeamTwoScore < g.TeamOneScore)
+				                    THEN 1
+			                    ELSE 0
+			                    END AS Loses
+		                    FROM Teams t
+		                    INNER JOIN Games g ON t.Id IN (g.TeamOneId, g.TeamTwoId)
+                            WHERE t.PlayerTwoId IS NULL
+	                    ) AS team
+						GROUP BY Id
+						ORDER BY CAST(SUM(team.Wins) AS float)/(SUM(team.Wins)+SUM(team.Loses)) DESC
+                        OFFSET 0 ROWS FETCH NEXT @NTeams ROWS ONLY
+                    ) AS leaderboard
+                    INNER JOIN Teams t ON t.Id = leaderboard.Id";
+                leaderboard = await connection.QueryAsync<LeaderboardVM>(sql, new { nTeams });
+            }
+            return leaderboard;
+        }
+
+        public async Task<IEnumerable<LeaderboardVM>> FindDoubleTeamLeaderboard(int nTeams)
+        {
+            IEnumerable<LeaderboardVM> leaderboard;
+            using (var connection = _connectionFactory.GetConnection())
+            {
+                const string sql = @"SELECT leaderboard.*, t.Name
+                    FROM (
+	                    SELECT team.Id AS Id, SUM(team.Wins) AS Wins, SUM(team.Loses) AS Loses
+	                    FROM (
+		                    SELECT t.Id,
+			                    CASE WHEN (t.Id = g.TeamOneId AND g.TeamOneScore > g.TeamTwoScore)
+				                    OR (t.Id = g.TeamTwoId AND g.TeamTwoScore > g.TeamOneScore)
+				                    THEN 1
+			                    ELSE 0
+			                    END AS Wins,
+			                    CASE WHEN (t.Id = g.TeamOneId AND g.TeamOneScore < g.TeamTwoScore)
+				                    OR (t.Id = g.TeamTwoId AND g.TeamTwoScore < g.TeamOneScore)
+				                    THEN 1
+			                    ELSE 0
+			                    END AS Loses
+		                    FROM Teams t
+		                    INNER JOIN Games g ON t.Id IN (g.TeamOneId, g.TeamTwoId)
+                            WHERE t.PlayerTwoId IS NOT NULL
+	                    ) AS team
+						GROUP BY Id
+						ORDER BY CAST(SUM(team.Wins) AS float)/(SUM(team.Wins)+SUM(team.Loses)) DESC
+                        OFFSET 0 ROWS FETCH NEXT @NTeams ROWS ONLY
+                    ) AS leaderboard
+                    INNER JOIN Teams t ON t.Id = leaderboard.Id";
+                leaderboard = await connection.QueryAsync<LeaderboardVM>(sql, new { nTeams });
+            }
+            return leaderboard;
         }
     }
 }

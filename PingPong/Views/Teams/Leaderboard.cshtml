@@ -1,0 +1,61 @@
+﻿@model PingPong.Models.TeamLeaderboardVM
+
+@{
+    ViewData["Title"] = "Leaderboard";
+}
+
+@functions {
+    async Task RenderLeaderboardTable(IEnumerable<LeaderboardVM> leaderboards)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Wins / Loses
+                    </th>
+                    <th>
+                        Win Ratio
+                    </th>
+                    <th>
+                        Games Played
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in leaderboards) {
+                    <tr>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@item.Id">@item.Name</a>
+                        </td>
+                        <td>
+                            @item.Wins / @item.Loses
+                        </td>
+                        <td>
+                            @(item.Wins *100 / (item.Wins+item.Loses))%
+                        </td>
+                        <td>
+                            @(item.Wins+item.Loses)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
+
+<h1>Leaderboard</h1>
+
+<h2>Single Teams</h2>
+
+@{
+    await RenderLeaderboardTable(Model.SingleTeamLeaderboards);
+}
+
+<h2>Double Teams</h2>
+
+@{
+    await RenderLeaderboardTable(Model.DoubleTeamLeaderboards);
+}
