@@ -70,9 +70,9 @@ namespace PingPong.Controllers
                 var game = new Game
                 {
                     Date = gameTeamSelectionVM.Date,
-                    TeamOneId = gameTeamSelectionVM.SelectedTeamOneId,
+                    TeamOne = new Team { Id = gameTeamSelectionVM.SelectedTeamOneId },
                     TeamOneScore = gameTeamSelectionVM.TeamOneScore,
-                    TeamTwoId = gameTeamSelectionVM.SelectedTeamTwoId,
+                    TeamTwo = new Team { Id = gameTeamSelectionVM.SelectedTeamTwoId },
                     TeamTwoScore = gameTeamSelectionVM.TeamTwoScore
                 };
                 await _gameRepository.Create(game);
@@ -120,15 +120,13 @@ namespace PingPong.Controllers
 
         private async Task<GameTeamVM> ToGameTeamVM(Game game)
         {
-            var teamOne = await _teamRepository.FindOne(game.TeamOneId);
-            var teamTwo = await _teamRepository.FindOne(game.TeamTwoId);
             return new GameTeamVM
             {
                 Id = game.Id,
                 Date = game.Date,
-                TeamOne = teamOne,
+                TeamOne = game.TeamOne,
                 TeamOneScore = game.TeamOneScore,
-                TeamTwo = teamTwo,
+                TeamTwo = game.TeamTwo,
                 TeamTwoScore = game.TeamTwoScore
             };
         }

@@ -19,13 +19,6 @@ namespace PingPong.Data
             _connectionFactory = connectionFactory;
         }
 
-        private Team RelationshipMapper(Team team, Player playerOne, Player playerTwo)
-        {
-            team.PlayerOne = playerOne;
-            team.PlayerTwo = playerTwo;
-            return team;
-        }
-
         public async Task<IEnumerable<Team>> FindAll()
         {
             IEnumerable<Team> teams;
@@ -34,7 +27,7 @@ namespace PingPong.Data
                 const string sql = @"SELECT * FROM Teams t
                     LEFT JOIN Players p1 ON t.PlayerOneId = p1.id
                     LEFT JOIN Players p2 ON t.PlayerTwoId = p2.id";
-                teams = await connection.QueryAsync<Team, Player, Player, Team>(sql, RelationshipMapper);
+                teams = await connection.QueryAsync<Team, Player, Player, Team>(sql, DataHelper.RelationshipMapper);
             }
             return teams;
         }
@@ -48,7 +41,7 @@ namespace PingPong.Data
                     LEFT JOIN Players p1 ON t.PlayerOneId = p1.id
                     LEFT JOIN Players p2 ON t.PlayerTwoId = p2.id
                     WHERE PlayerTwoId IS NULL";
-                teams = await connection.QueryAsync<Team, Player, Player, Team>(sql, RelationshipMapper);
+                teams = await connection.QueryAsync<Team, Player, Player, Team>(sql, DataHelper.RelationshipMapper);
             }
             return teams;
         }
@@ -62,7 +55,7 @@ namespace PingPong.Data
                     LEFT JOIN Players p1 ON t.PlayerOneId = p1.id
                     LEFT JOIN Players p2 ON t.PlayerTwoId = p2.id
                     WHERE PlayerTwoId IS NOT NULL";
-                teams = await connection.QueryAsync<Team, Player, Player, Team>(sql, RelationshipMapper);
+                teams = await connection.QueryAsync<Team, Player, Player, Team>(sql, DataHelper.RelationshipMapper);
             }
             return teams;
         }
@@ -90,7 +83,7 @@ namespace PingPong.Data
                     LEFT JOIN Players p1 ON t.PlayerOneId = p1.id
                     LEFT JOIN Players p2 ON t.PlayerTwoId = p2.id
                     WHERE t.Id = @Id";
-                team = (await connection.QueryAsync<Team, Player, Player, Team>(sql, RelationshipMapper,
+                team = (await connection.QueryAsync<Team, Player, Player, Team>(sql, DataHelper.RelationshipMapper,
                     new { id }))?.FirstOrDefault();
             }
             return team;
@@ -141,7 +134,7 @@ namespace PingPong.Data
                         WHERE @FirstPlayerId IN (PlayerOneId, PlayerTwoId) 
                         AND @SecondPlayerId IN (PlayerOneId, PlayerTwoId)";
                 }
-                return (await connection.QueryAsync<Team, Player, Player, Team>(sql, RelationshipMapper,
+                return (await connection.QueryAsync<Team, Player, Player, Team>(sql, DataHelper.RelationshipMapper,
                     new { firstPlayerId, secondPlayerId }))?.FirstOrDefault();
             }
         }

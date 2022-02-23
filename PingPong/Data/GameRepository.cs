@@ -14,13 +14,20 @@ namespace PingPong.Data
             _connectionFactory = connectionFactory;
         }
 
+
         public async Task<IEnumerable<Game>> FindAll()
         {
             IEnumerable<Game> teams;
             using (var connection = _connectionFactory.GetConnection())
             {
-                const string sql = "SELECT * FROM Games";
-                teams = await connection.QueryAsync<Game>(sql);
+                const string sql = @"SELECT * FROM Games g
+                    LEFT JOIN Teams t1 ON g.TeamOneId = t1.Id
+                    LEFT JOIN Players t1p1 ON t1.PlayerOneId = t1p1.Id
+                    LEFT JOIN Players t1p2 ON t1.PlayerTwoId = t1p2.Id
+                    LEFT JOIN Teams t2 ON g.TeamTwoId = t2.Id
+                    LEFT JOIN Players t2p1 ON t2.PlayerOneId = t2p1.Id
+                    LEFT JOIN Players t2p2 ON t2.PlayerTwoId = t2p2.Id";
+                teams = await connection.QueryAsync<Game, Team, Player, Player, Team, Player, Player, Game>(sql, DataHelper.RelationshipMapper);
             }
             return teams;
         }
@@ -32,11 +39,11 @@ namespace PingPong.Data
                 const string sql = @"INSERT INTO Games(Date, TeamOneId, TeamOneScore, TeamTwoId, TeamTwoScore)
                     values (@Date, @TeamOneId, @TeamOneScore, @TeamTwoId, @TeamTwoScore)";
                 await connection.QueryAsync(sql, new {
-                    game.Date, 
-                    game.TeamOneId, 
-                    game.TeamOneScore, 
-                    game.TeamTwoId, 
-                    game.TeamTwoScore 
+                    Date = game.Date, 
+                    TeamOneId = game.TeamOne.Id, 
+                    TeamOneScore = game.TeamOneScore, 
+                    TeamTwoId = game.TeamTwo.Id, 
+                    TeamTwoScore = game.TeamTwoScore 
                 });
             }
         }
@@ -46,8 +53,16 @@ namespace PingPong.Data
             Game game;
             using (var connection = _connectionFactory.GetConnection())
             {
-                const string sql = "SELECT * FROM Games WHERE Id = @Id";
-                game = await connection.QueryFirstOrDefaultAsync<Game>(sql, new { id });
+                const string sql = @"SELECT * FROM Games g
+                    LEFT JOIN Teams t1 ON g.TeamOneId = t1.Id
+                    LEFT JOIN Players t1p1 ON t1.PlayerOneId = t1p1.Id
+                    LEFT JOIN Players t1p2 ON t1.PlayerTwoId = t1p2.Id
+                    LEFT JOIN Teams t2 ON g.TeamTwoId = t2.Id
+                    LEFT JOIN Players t2p1 ON t2.PlayerOneId = t2p1.Id
+                    LEFT JOIN Players t2p2 ON t2.PlayerTwoId = t2p2.Id
+                    WHERE g.Id = @Id";
+                game = (await connection.QueryAsync<Game, Team, Player, Player, Team, Player, Player, Game>(sql, DataHelper.RelationshipMapper,
+                    new { id }))?.FirstOrDefault();
             }
             return game;
         }

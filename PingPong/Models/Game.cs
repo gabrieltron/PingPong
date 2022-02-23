@@ -8,8 +8,8 @@ namespace PingPong.Models
         public int Id { get; set; }
         public DateTime Date { get; set; }
         public int TeamOneScore { get; set; }
-        public int TeamOneId { get; set; }
+        public Team TeamOne { get; set; }
         public int TeamTwoScore { get; set; }
-        public int TeamTwoId { get; set; }
+        public Team TeamTwo { get; set; }
     }
 }
