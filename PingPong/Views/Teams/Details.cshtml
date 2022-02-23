@@ -1,4 +1,4 @@
-﻿@model PingPong.Models.TeamPlayerVm
+﻿@model PingPong.Models.TeamDetailsVM
 
 @{
     ViewData["Title"] = "Details";
@@ -8,35 +8,55 @@
 
 <div>
     <h4>Team</h4>
-    <hr />
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Name)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.PlayerOne)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.PlayerTwo)
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>
-                    @Html.DisplayFor(model => model.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(model => model.PlayerOne.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(model => model.PlayerTwo.Name)
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PlayerOne)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PlayerOne.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PlayerTwo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PlayerTwo.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.LastGames)
+        </dt>
+        @foreach(var game in Model.LastGames)
+        {
+            <dt class = "col-sm-2" />
+            <dd class = "col-sm-10" 
+                @if(
+                    (game.Id == game.TeamOne.Id && game.TeamOneScore > game.TeamTwoScore)
+                    || (game.Id == game.TeamTwo.Id && game.TeamTwoScore > game.TeamOneScore)
+                ) {
+                    @:style="color:green;"
+                } else {
+                    @:style="color:red;"
+                }
+            >
+                @game.TeamOne.PlayerOne.Name
+                @if(game.TeamOne.PlayerTwo != null) {
+                    @:& @game.TeamOne.PlayerTwo.Name
+                }
+                - @game.TeamOneScore
+                |
+                @game.TeamTwoScore
+                - @game.TeamTwo.PlayerOne.Name
+                @if(game.TeamTwo.PlayerTwo != null) {
+                    @game.TeamTwo.PlayerTwo.Name
+                }
+            </dd>
+        }
+    </dl>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |

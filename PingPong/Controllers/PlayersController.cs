@@ -27,7 +27,7 @@ namespace PingPong.Controllers
         public async Task<IActionResult> Leaderboard()
         {
             const int leaderboardSize = 10;
-            IEnumerable<PlayerLeaderboardVM> leaderboard = await this._repository.FindLeaderboard(leaderboardSize);
+            IEnumerable<LeaderboardVM> leaderboard = await this._repository.FindLeaderboard(leaderboardSize);
             return View(leaderboard);
         }
 

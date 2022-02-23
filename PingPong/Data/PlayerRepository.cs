@@ -4,7 +4,7 @@ using PingPong.Models;
 namespace PingPong.Data
 {
     public interface IPlayerRepository : ICrudRepository<Player, int> {
-        public Task<IEnumerable<PlayerLeaderboardVM>> FindLeaderboard(int nPlayers);
+        public Task<IEnumerable<LeaderboardVM>> FindLeaderboard(int nPlayers);
     }
 
     public class PlayerRepository : IPlayerRepository
@@ -65,9 +65,9 @@ namespace PingPong.Data
             }
         }
 
-        public async Task<IEnumerable<PlayerLeaderboardVM>> FindLeaderboard(int nPlayers)
+        public async Task<IEnumerable<LeaderboardVM>> FindLeaderboard(int nPlayers)
         {
-            IEnumerable<PlayerLeaderboardVM> leaderboard;
+            IEnumerable<LeaderboardVM> leaderboard;
             using (var connection = _connectionFactory.GetConnection())
             {
                 const string sql = @"SELECT leaderboard.*, p.Name
@@ -94,7 +94,7 @@ namespace PingPong.Data
                         OFFSET 0 ROWS FETCH NEXT @NPlayers ROWS ONLY
                     ) AS leaderboard
                     INNER JOIN Players p ON p.Id = leaderboard.Id";
-                leaderboard = await connection.QueryAsync<PlayerLeaderboardVM>(sql, new { nPlayers });
+                leaderboard = await connection.QueryAsync<LeaderboardVM>(sql, new { nPlayers });
             }
             return leaderboard;
         }

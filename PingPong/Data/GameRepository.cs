@@ -5,6 +5,9 @@ namespace PingPong.Data
 {
     public interface IGameRepository : ICrudRepository<Game, int> {
         public Task<IEnumerable<Game>> FindLastGamesFromPlayers(int playerId, int nLastGames);
+
+        public Task<IEnumerable<Game>> FindLastGamesFromTeam(int teamId, int nLastGames);
+
     }
 
     public class GameRepository : IGameRepository
@@ -80,7 +83,7 @@ namespace PingPong.Data
 
         public async Task<IEnumerable<Game>> FindLastGamesFromPlayers(int playerId, int nLastGames)
         {
-            IEnumerable<Game> teams;
+            IEnumerable<Game> games;
             using (var connection = _connectionFactory.GetConnection())
             {
                 const string sql = @"SELECT * FROM Games g
@@ -92,11 +95,32 @@ namespace PingPong.Data
                     LEFT JOIN Players t2p2 ON t2.PlayerTwoId = t2p2.Id
                     WHERE @PlayerId IN (t1p1.Id, t1p2.Id, t2p1.Id, t2p2.Id)
                     ORDER BY g.Date DESC 
-                    FETCH NEXT @NLastGames ROWS ONLY";
-                teams = await connection.QueryAsync<Game, Team, Player, Player, Team, Player, Player, Game>(sql, DataHelper.RelationshipMapper,
+                    OFFSET 0 ROWS FETCH NEXT @NLastGames ROWS ONLY";
+                games = await connection.QueryAsync<Game, Team, Player, Player, Team, Player, Player, Game>(sql, DataHelper.RelationshipMapper,
                     new { playerId, nLastGames });
             }
-            return teams;
+            return games;
+        }
+
+        public async Task<IEnumerable<Game>> FindLastGamesFromTeam(int teamId, int nLastGames)
+        {
+            IEnumerable<Game> games;
+            using (var connection = _connectionFactory.GetConnection())
+            {
+                const string sql = @"SELECT * FROM Games g
+                    LEFT JOIN Teams t1 ON g.TeamOneId = t1.Id
+                    LEFT JOIN Players t1p1 ON t1.PlayerOneId = t1p1.Id
+                    LEFT JOIN Players t1p2 ON t1.PlayerTwoId = t1p2.Id
+                    LEFT JOIN Teams t2 ON g.TeamTwoId = t2.Id
+                    LEFT JOIN Players t2p1 ON t2.PlayerOneId = t2p1.Id
+                    LEFT JOIN Players t2p2 ON t2.PlayerTwoId = t2p2.Id
+                    WHERE @TeamId IN (t1.Id, t2.Id)
+                    ORDER BY g.Date DESC 
+                    OFFSET 0 ROWS FETCH NEXT @NLastGames ROWS ONLY";
+                games = await connection.QueryAsync<Game, Team, Player, Player, Team, Player, Player, Game>(sql, DataHelper.RelationshipMapper,
+                    new { teamId, nLastGames });
+            }
+            return games;
         }
 
 

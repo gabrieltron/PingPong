@@ -2,7 +2,7 @@
 
 namespace PingPong.Models
 {
-    public class PlayerLeaderboardVM
+    public class LeaderboardVM
     {
         public int Id { get; set; }
         public string Name { get; set; }

@@ -11,11 +11,13 @@ namespace PingPong.Controllers
     {
         private readonly IPlayerRepository _playerRepository;
         private readonly ITeamRepository _teamRepository;
+        private readonly IGameRepository _gameRepository;
 
-        public TeamsController(IPlayerRepository playerRepository, ITeamRepository teamRepository)
+        public TeamsController(IPlayerRepository playerRepository, ITeamRepository teamRepository, IGameRepository gameRepository)
         {
             _playerRepository = playerRepository;
             _teamRepository = teamRepository;
+            _gameRepository = gameRepository;
         }
 
         // GET: Teams
@@ -33,6 +35,8 @@ namespace PingPong.Controllers
         // GET: Teams/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            const int nLastGames = 10;
+
             if (id == null)
             {
                 return NotFound();
@@ -44,7 +48,15 @@ namespace PingPong.Controllers
                 return NotFound();
             }
 
-            return View(await ToTeamPlayerVm(team));
+            var teamDetailsVM = new TeamDetailsVM
+            {
+                Id = (int)id,
+                Name = team.Name,
+                PlayerOne = team.PlayerOne,
+                PlayerTwo = team.PlayerTwo,
+                LastGames = await _gameRepository.FindLastGamesFromTeam((int)id, nLastGames)
+            };
+            return View(teamDetailsVM);
         }
 
         // GET: Teams/Create
