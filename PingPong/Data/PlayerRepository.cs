@@ -3,7 +3,9 @@ using PingPong.Models;
 
 namespace PingPong.Data
 {
-    public interface IPlayerRepository : ICrudRepository<Player, int> {}
+    public interface IPlayerRepository : ICrudRepository<Player, int> {
+        public Task<IEnumerable<PlayerLeaderboardVM>> FindLeaderboard(int nPlayers);
+    }
 
     public class PlayerRepository : IPlayerRepository
     {
@@ -61,6 +63,35 @@ namespace PingPong.Data
                 const string sql = "DELETE FROM Players WHERE Id = @Id";
                 await connection.QueryAsync(sql, new { id });
             }
+        }
+
+        public async Task<IEnumerable<PlayerLeaderboardVM>> FindLeaderboard(int nPlayers)
+        {
+            IEnumerable<PlayerLeaderboardVM> leaderboard;
+            using (var connection = _connectionFactory.GetConnection())
+            {
+                const string sql = @"SELECT leaderboard.*, p.Name
+                    FROM (
+	                    SELECT player.Id AS playerId, SUM(player.score) AS WinRatio, COUNT(player.Id) AS GamesPlayed
+	                    FROM (
+		                    SELECT p.Id,
+			                    CASE WHEN (t.Id = g.TeamOneId AND g.TeamOneScore > g.TeamTwoScore)
+				                    OR (t.Id = g.TeamTwoId AND g.TeamTwoScore > g.TeamOneScore)
+				                    THEN 1
+			                    ELSE -1
+			                    END AS score
+		                    FROM Players p
+		                    INNER JOIN Teams t ON p.Id IN (t.PlayerOneId, t.PlayerTwoId)
+		                    INNER JOIN Games g ON t.Id IN (g.TeamOneId, g.TeamTwoId)
+	                    ) AS player
+	                    GROUP BY player.Id
+	                    ORDER BY WinRatio DESC
+	                    OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY
+                    ) AS leaderboard
+                    INNER JOIN Players p ON p.Id = leaderboard.playerId";
+                leaderboard = await connection.QueryAsync<PlayerLeaderboardVM>(sql, new { nPlayers });
+            }
+            return leaderboard;
         }
     }
 }
