@@ -83,7 +83,7 @@ namespace PingPong.Data
             IEnumerable<Game> teams;
             using (var connection = _connectionFactory.GetConnection())
             {
-                const string sql = @"SELECT TOP @NLastGames * FROM Games g
+                const string sql = @"SELECT * FROM Games g
                     LEFT JOIN Teams t1 ON g.TeamOneId = t1.Id
                     LEFT JOIN Players t1p1 ON t1.PlayerOneId = t1p1.Id
                     LEFT JOIN Players t1p2 ON t1.PlayerTwoId = t1p2.Id
@@ -91,7 +91,8 @@ namespace PingPong.Data
                     LEFT JOIN Players t2p1 ON t2.PlayerOneId = t2p1.Id
                     LEFT JOIN Players t2p2 ON t2.PlayerTwoId = t2p2.Id
                     WHERE @PlayerId IN (t1p1.Id, t1p2.Id, t2p1.Id, t2p2.Id)
-                    ORDER BY g.Date DESC";
+                    ORDER BY g.Date DESC 
+                    FETCH NEXT @NLastGames ROWS ONLY";
                 teams = await connection.QueryAsync<Game, Team, Player, Player, Team, Player, Player, Game>(sql, DataHelper.RelationshipMapper,
                     new { playerId, nLastGames });
             }

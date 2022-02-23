@@ -10,8 +10,5 @@ namespace PingPong.Models
         public int Wins {  get; set; }
 
         public int Loses { get; set; }
-
-        [Display(Name = "Games Played")]
-        public int GamesPlayed { get; set; }
     }
 }

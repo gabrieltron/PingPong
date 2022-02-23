@@ -16,7 +16,10 @@
                 Wins / Loses
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.GamesPlayed)
+                Win Ratio
+            </th>
+            <th>
+                Games Played
             </th>
         </tr>
     </thead>
@@ -30,7 +33,10 @@
                     @item.Wins / @item.Loses
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.GamesPlayed)
+                    @(item.Wins *100 / (item.Wins+item.Loses))%
+                </td>
+                <td>
+                    @(item.Wins+item.Loses)
                 </td>
             </tr>
         }
