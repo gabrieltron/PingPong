@@ -123,7 +123,6 @@ namespace PingPong.Data
                 {
                     sql = @"SELECT * FROM Teams t
                         LEFT JOIN Players p1 ON t.PlayerOneId = p1.id
-                        LEFT JOIN Players p2 ON t.PlayerTwoId = p2.id
                         WHERE @FirstPlayerId = PlayerOneId
                         AND PlayerTwoId IS NULL";
                 } else

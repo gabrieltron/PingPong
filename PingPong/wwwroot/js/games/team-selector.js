@@ -1,11 +1,14 @@
 ﻿$(document).ready(function () {
+    var args = JSON.parse($("[data-role='js-args']").text());
+    var singleTeams = args.SingleTeams;
+    var doubleTeams = args.DoubleTeams;
+
     $("input[name$='TeamsSize']").click(function () {
-        var args = JSON.parse($("[data-role='js-args']").text());
         var teamsSize = $(this).val();
         if (teamsSize== 1) {
-            updateTeamSelectors(args.SingleTeams);
+            updateTeamSelectors(singleTeams);
         } else {
-            updateTeamSelectors(args.DoubleTeams);
+            updateTeamSelectors(doubleTeams);
         }
     });
 
