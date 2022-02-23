@@ -23,13 +23,13 @@ namespace PingPong.Controllers
         // GET: Teams
         public async Task<IActionResult> Index()
         {
-            var teamPlayerVms = new List<TeamPlayerVm>();
+            var teamPlayerVMs = new List<TeamIndexVM>();
             foreach (var team in await _teamRepository.FindAll())
             {
-                var teamPlayerVm = await ToTeamPlayerVm(team);
-                teamPlayerVms.Add(teamPlayerVm);
+                var teamIndexVM = await ToTeamIndexVM(team);
+                teamPlayerVMs.Add(teamIndexVM);
             }
-            return View(teamPlayerVms);
+            return View(teamPlayerVMs);
         }
 
         public async Task<IActionResult> Leaderboard()
@@ -217,14 +217,16 @@ namespace PingPong.Controllers
             return await _teamRepository.FindOne(id) != null;
         }
 
-        private async Task<TeamPlayerVm> ToTeamPlayerVm(Team team)
+        private async Task<TeamIndexVM> ToTeamIndexVM(Team team)
         {
-            return new TeamPlayerVm
+            return new TeamIndexVM
             {
                 Id = team.Id,
                 Name = team.Name,
                 PlayerOne = team.PlayerOne,
-                PlayerTwo = team.PlayerTwo
+                PlayerTwo = team.PlayerTwo,
+                Wins = await _teamRepository.CountWins(team.Id),
+                PlayedGames = await _teamRepository.CountTotalGames(team.Id)
             };
         }
 

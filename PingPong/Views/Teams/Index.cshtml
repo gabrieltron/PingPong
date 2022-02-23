@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PingPong.Models.TeamPlayerVm>
+﻿@model IEnumerable<PingPong.Models.TeamIndexVM>
 
 @{
     ViewData["Title"] = "Index";
@@ -21,6 +21,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.PlayerTwo)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Wins)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PlayedGames)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -35,6 +41,12 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.PlayerTwo!.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Wins)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PlayedGames)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

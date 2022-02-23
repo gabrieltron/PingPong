@@ -11,6 +11,9 @@ namespace PingPong.Data
 
         public Task<IEnumerable<LeaderboardVM>> FindSingleTeamLeaderboard(int nTeams);
         public Task<IEnumerable<LeaderboardVM>> FindDoubleTeamLeaderboard(int nTeams);
+
+        public Task<int> CountTotalGames(int teamId);
+        public Task<int> CountWins(int teamId);
     }
 
     public class TeamRepository : ITeamRepository
@@ -208,5 +211,30 @@ namespace PingPong.Data
             }
             return leaderboard;
         }
+
+        public async Task<int> CountTotalGames(int teamId)
+        {
+            using (var connection = _connectionFactory.GetConnection())
+            {
+                const string sql = @"SELECT Count(*) FROM Teams t
+                    LEFT JOIN Games g ON t.Id IN (g.TeamOneId, g.TeamTwoId)
+                    WHERE t.Id = @TeamId";
+                return await connection.QueryFirstAsync<int>(sql, new { teamId });
+            }
+        }
+
+        public async Task<int> CountWins(int teamId)
+        {
+            using (var connection = _connectionFactory.GetConnection())
+            {
+                const string sql = @"SELECT Count(*) FROM Teams t
+                    LEFT JOIN Games g ON t.Id IN (g.TeamOneId, g.TeamTwoId)
+                    WHERE t.Id = @TeamId
+                    AND (t.Id = g.TeamOneId AND g.TeamOneScore > g.TeamTwoScore)
+                        OR (t.Id = g.TeamTwoId AND g.TeamTwoScore > g.TeamOneScore)";
+                return await connection.QueryFirstAsync<int>(sql, new { teamId });
+            }
+        }
+
     }
 }
